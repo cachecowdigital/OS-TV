@@ -1,0 +1,10 @@
+.build
+.build-release/
+build/
+*.app
+.DS_Store
+.swiftpm/
+# Credentials never belong in this repo — they live in the macOS Keychain.
+.env
+*.credentials
+scratch/

@@ -1,0 +1,35 @@
+name: CI
+
+# Builds and runs the unit test suite on every push to main and every pull request.
+# Deliberately does NOT run build_app.sh or build_dmg.sh: those need the maintainer's icon/asset
+# pipeline and signing identity, so packaging stays a local, maintainer-only step.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          swift --version
+          xcodebuild -version || true
+
+      - name: Build (debug)
+        run: swift build
+
+      - name: Test
+        run: swift test
+
+      - name: Build (release)
+        run: swift build -c release

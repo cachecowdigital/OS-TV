@@ -1,0 +1,23 @@
+OS TV — How to open it
+
+This app was sent to you directly rather than downloaded from the App Store,
+so macOS will refuse to open it the first time with a message like:
+
+    "OS TV" can't be opened because Apple cannot check it for malicious software.
+
+That's just Apple being cautious about apps that aren't distributed through
+their store — it's expected, and it's a one-time thing. To open it:
+
+  1. Drag "OS TV.app" into your Applications folder (if you haven't already).
+  2. Right-click (or Control-click) "OS TV.app" and choose "Open".
+  3. A dialog will appear — click "Open" again to confirm.
+
+After that first time, it opens normally with a regular double-click.
+
+If step 2 doesn't show an "Open" option, or you already tried double-clicking
+and got stuck on the warning:
+
+  Go to System Settings → Privacy & Security → scroll down to the
+  "Security" section → click "Open Anyway" next to OS TV.
+
+That's it — you only need to do this once.
