@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "IPTVMac",
-    platforms: [.macOS("13.0")],
+    platforms: [.macOS("13.0"), .iOS("17.0")],
     products: [
         .executable(name: "IPTVMac", targets: ["IPTVMac"]),
         .executable(name: "iptvprobe", targets: ["iptvprobe"]),

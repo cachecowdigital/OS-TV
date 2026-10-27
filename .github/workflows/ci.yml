@@ -33,3 +33,20 @@ jobs:
 
       - name: Build (release)
         run: swift build -c release
+
+  ios-build:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select an Xcode with the iOS SDK
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphonesimulator --show-sdk-version
+
+      - name: Build the iOS app (simulator, unsigned)
+        run: |
+          xcodebuild -project "ios/OS-TV-iOS.xcodeproj" -scheme "OS TV" \
+            -configuration Debug -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/ios CODE_SIGNING_ALLOWED=NO build

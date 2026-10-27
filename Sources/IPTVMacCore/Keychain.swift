@@ -57,8 +57,13 @@ public enum CredentialStore {
     /// `Playlist.keychainAccount` instead, so they can never collide with this one or each other.
     public static let defaultAccount = "primary"
 
+    #if os(macOS)
     /// An access object trusting any application. Returns nil if the system refuses,
     /// in which case the item is stored with the default per-application rules.
+    ///
+    /// macOS-only: iOS has no `SecAccess`/`SecTrustedApplication`, and it needs none — an
+    /// iOS app is sandboxed by its entitlement, so the keychain item is already only
+    /// reachable by this app.
     private static func openAccess(label: String) -> SecAccess? {
         var anyApplication: SecTrustedApplication?
         guard SecTrustedApplicationCreateFromPath(nil, &anyApplication) == errSecSuccess,
@@ -68,6 +73,7 @@ public enum CredentialStore {
         else { return nil }
         return access
     }
+    #endif
 
     private static func baseQuery(_ account: String) -> [String: Any] {
         [
@@ -84,16 +90,24 @@ public enum CredentialStore {
         SecItemDelete(query as CFDictionary)
         var add = query
         add[kSecValueData as String] = data
+        #if os(macOS)
         if accessibleToAnyApplication, let access = openAccess(label: service) {
             add[kSecAttrAccess as String] = access
         }
+        #else
+        // iOS: no access object exists. Keep the item available after the first unlock so a
+        // re-launch (or a background refresh) reads it without the device being unlocked first.
+        add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        #endif
         var status = SecItemAdd(add as CFDictionary, nil)
+        #if os(macOS)
         if status != errSecSuccess, add[kSecAttrAccess as String] != nil {
             // The access object was refused. Store it anyway under the default rules —
             // a prompt after each build beats losing the saved credentials.
             add.removeValue(forKey: kSecAttrAccess as String)
             status = SecItemAdd(add as CFDictionary, nil)
         }
+        #endif
         guard status == errSecSuccess else { throw KeychainError.status(status) }
     }
 
